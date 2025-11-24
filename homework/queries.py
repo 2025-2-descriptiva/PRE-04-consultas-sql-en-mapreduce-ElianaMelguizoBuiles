@@ -3,16 +3,17 @@
 # pylint: disable=broad-exception-raised
 # pylint: disable=import-error
 
-from homework.mapreduce import hadoop
-
+# import mapreduce.run_mapreduce_job as run_mapreduce_job  # type: ignore
+from .mapreduce import run_mapreduce_job
 
 #
 # Columns:
 # total_bill, tip, sex, smoker, day, time, size
 #
 
+
+
 #
-# CONSULTA 1:
 # SELECT *, tip/total_bill as tip_rate
 # FROM tips;
 #
@@ -21,26 +22,21 @@ def mapper_query_1(sequence):
     result = []
     for index, (_, row) in enumerate(sequence):
         if index == 0:
-            result.append( 
-                (
-                    index, 
-                    row.strip() + ',tip_rate'
-                )  
+            result.append(
+                (index, row.strip() + ",tip_rate")
             )
         else:
             row_values = row.strip().split(",")
             total_bill = float(row_values[0])
-            tip = float(row_values[1])            
+            tip = float(row_values[1])
             tip_rate = tip / total_bill
-            result.append(
-                (index, row.strip() + "," + str(tip_rate))
-            )
-
+            result.append((index, row.strip() + "," + str(tip_rate)))
     return result
 
-def reducer_query_1(sequence):
-    return sequence
 
+def reducer_query_1(sequence):
+    """Reducer"""
+    return sequence
 
 
 #
@@ -64,8 +60,6 @@ def mapper_query_2(sequence):
 def reducer_query_2(sequence):
     """Reducer"""
     return sequence
-
-
 
 #
 # SELECT *
@@ -113,12 +107,12 @@ def reducer_query_4(sequence):
     return sequence
 
 
+
 #
 # SELECT sex, count(*)
 # FROM tips
 # GROUP BY sex;
 #
-
 def mapper_query_5(sequence):
     """Mapper"""
     result = []
@@ -140,52 +134,47 @@ def reducer_query_5(sequence):
     return list(counter.items())
 
 
-
 #
 # ORQUESTADOR:
 #
 def run():
     """Orquestador"""
 
-
-    hadoop(
-        mapper_fn=mapper_query_1,
-        reducer_fn=reducer_query_1,
-        input_folder="files/input",
-        output_folder="files/query_1",
-    )
-
-    hadoop(
-        mapper_fn=mapper_query_2,
-        reducer_fn=reducer_query_2,
-        input_folder="files/input",
-        output_folder="files/query_2",
+    run_mapreduce_job(
+        mapper=mapper_query_1,
+        reducer=reducer_query_1,
+        input_directory="files/input",
+        output_directory="files/query_1",
     )    
 
-    hadoop(
-        mapper_fn=mapper_query_3,
-        reducer_fn=reducer_query_3,
-        input_folder="files/input",
-        output_folder="files/query_3",
-    )        
+    run_mapreduce_job(
+        mapper=mapper_query_2,
+        reducer=reducer_query_2,
+        input_directory="files/input",
+        output_directory="files/query_2",
+    )
 
-    hadoop(
-        mapper_fn=mapper_query_4,
-        reducer_fn=reducer_query_4,
-        input_folder="files/input",
-        output_folder="files/query_4",
-    )        
+    run_mapreduce_job(
+        mapper=mapper_query_3,
+        reducer=reducer_query_3,
+        input_directory="files/input",
+        output_directory="files/query_3",
+    )
 
-    hadoop(
-        mapper_fn=mapper_query_5,
-        reducer_fn=reducer_query_5,
-        input_folder="files/input",
-        output_folder="files/query_5",
-    )        
+    run_mapreduce_job(
+        mapper=mapper_query_4,
+        reducer=reducer_query_4,
+        input_directory="files/input",
+        output_directory="files/query_4",
+    )
+
+    run_mapreduce_job(
+        mapper=mapper_query_5,
+        reducer=reducer_query_5,
+        input_directory="files/input",
+        output_directory="files/query_5",
+    )
 
 
 if __name__ == "__main__":
-
-    run()
-
-    
+    run()   
